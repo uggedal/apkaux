@@ -1,0 +1,13 @@
+#!/bin/sh
+
+tmp=$(mktemp -dt apkdisownedXXXXXX)
+db=$tmp/db
+fs=$tmp/fs
+
+trap  "rm -rf $tmp" EXIT
+
+apk info \* -qL | sed '/^$/d' | sort -u | sed 's#^#/#' > $db
+
+find /bin /etc /lib /sbin /usr -type f -print | sort > $fs
+
+comm -23 $fs $db

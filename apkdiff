@@ -1,0 +1,53 @@
+#!/bin/sh
+
+: ${DIFFTOOL:=vimdiff}
+: ${DIFFPATH:=/etc}
+
+prompt() {
+  printf '%s: [d]iff [r]emove [u]se [s]skip [q]uit: ' "$1"
+}
+
+for new in $(find $DIFFPATH -name .\* -type d -prune -o -name \*.apk-new -print); do
+  orig=${new%*.apk-new}
+
+  [ -f "$orig" ] || {
+    printf '%s does not exist\n' "$orig"
+    rm -i "$new"
+    continue
+  }
+
+  cmp -s "$orig" "$new" && {
+    printf '%s is up to date\n' "$orig"
+    rm -i "$new"
+    continue
+  }
+
+  prompt "$new"
+  while read a; do
+    case $a in
+      d)
+        $DIFFTOOL "$new" "$orig"
+        prompt "$new"
+        continue
+        ;;
+      r)
+        rm "$new"
+        break
+        ;;
+      u)
+        mv "$new" "$orig"
+        break
+        ;;
+      s)
+        break
+        ;;
+      q)
+        exit 0
+        ;;
+      *)
+        prompt
+        continue
+        ;;
+    esac
+  done
+done

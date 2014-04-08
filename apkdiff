@@ -4,7 +4,7 @@
 : ${DIFFPATH:=/etc}
 
 prompt() {
-  printf '%s: [d]iff [r]emove [u]se [s]skip [q]uit: ' "$1"
+  printf '%s:\n[d]iff [r]emove [u]se [s]skip [q]uit: ' "$1"
 }
 
 for new in $(find $DIFFPATH -name .\* -type d -prune -o -name \*.apk-new -print); do
